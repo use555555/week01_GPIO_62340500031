@@ -97,7 +97,6 @@ int main(void)
   //S2 Variable
   GPIO_PinState SwitchStateS2[2];//NOW,LAST
   uint32_t ButtonTimeStampS2 = 0;
-  int LED2State = 1;
   //S3 Variable
   GPIO_PinState SwitchStateS3[2];//NOW,LAST
   uint32_t ButtonTimeStampS3 = 0;
