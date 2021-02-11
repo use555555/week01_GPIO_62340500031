@@ -89,23 +89,30 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  GPIO_PinState SwitchState[2];//NOW,LAST
+  //S1 Variable
+  GPIO_PinState SwitchStateS1[2];//NOW,LAST
   uint16_t LED1_HalfPeriod = 1000;//1Hz
-  uint32_t TimeStamp = 0;
-  uint32_t ButtonTimeStamp = 0;
+  uint32_t TimeStampS1 = 0;
+  uint32_t ButtonTimeStampS1 = 0;
+  //S2 Variable
+  GPIO_PinState SwitchStateS2[2];//NOW,LAST
+  uint32_t ButtonTimeStampS2 = GPIO_PIN_RESET;
+  int LED2State = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
-	  //switch pressed
-	  SwitchState[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
-	  if(HAL_GetTick() - ButtonTimeStamp >= 200) //mS
+	  //switch pressed S1
+	  SwitchStateS1[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
+	  SwitchStateS2[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+	  if(HAL_GetTick() - ButtonTimeStampS1 >= 200) //mS
 	  {
-		  if(SwitchState[1] == GPIO_PIN_SET && SwitchState[0] == GPIO_PIN_RESET)
+		  if(SwitchStateS1[1] == GPIO_PIN_SET && SwitchStateS1[0] == GPIO_PIN_RESET)
 		  {
-			  ButtonTimeStamp = HAL_GetTick();
+			  ButtonTimeStampS1 = HAL_GetTick();
 			  //Change Half Period of LED 1
 			  if(LED1_HalfPeriod == 1000)
 			  {
@@ -124,15 +131,34 @@ int main(void)
 				  LED1_HalfPeriod = 1000;
 			  }
 		  }
-		  SwitchState[1] = SwitchState[0];
 	  }
+	  SwitchStateS1[1] = SwitchStateS1[0];
+
+	  //switch pressed S2
+	  if(HAL_GetTick() - ButtonTimeStampS2 >= 200) //mS
+	  	  {
+	  		  if(SwitchStateS2[1] == GPIO_PIN_SET && SwitchStateS2[0] == GPIO_PIN_RESET)
+	  		  {
+	  			  ButtonTimeStampS2 = HAL_GetTick();
+	  			  //Toggle LED 2
+	  			  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
+	  			  {
+	  				  LED2State = GPIO_PIN_RESET;
+	  			  }
+	  			  else
+	  			  {
+	  				  LED2State = GPIO_PIN_SET;
+	  			  }
+	  		  }
+	  	  }
+	  SwitchStateS2[1] = SwitchStateS2[0];
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //Run LED1
-	  if(HAL_GetTick() - TimeStamp >= LED1_HalfPeriod)
+	  //Run LED 1
+	  if(HAL_GetTick() - TimeStampS1 >= LED1_HalfPeriod)
 	  {
-		  TimeStamp = HAL_GetTick();
+		  TimeStampS1 = HAL_GetTick();
 		  //Toggle LED 1
 		  if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_SET)
 		  {
@@ -143,6 +169,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
 		  }
 	  }
+	  //Run LED 2
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, LED2State);
   }
   /* USER CODE END 3 */
 }
@@ -242,6 +270,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_9, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -255,11 +286,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PC7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pin : PA10 */
   GPIO_InitStruct.Pin = GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
