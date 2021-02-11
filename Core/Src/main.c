@@ -96,8 +96,14 @@ int main(void)
   uint32_t ButtonTimeStampS1 = 0;
   //S2 Variable
   GPIO_PinState SwitchStateS2[2];//NOW,LAST
-  uint32_t ButtonTimeStampS2 = GPIO_PIN_RESET;
+  uint32_t ButtonTimeStampS2 = 0;
   int LED2State = 1;
+  //S3 Variable
+  GPIO_PinState SwitchStateS3[2];//NOW,LAST
+  uint32_t ButtonTimeStampS3 = 0;
+  uint32_t TimeStampS3 = 0;
+  uint16_t LED3_Time = 500;//0.5S
+  int LED3Mode = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,6 +114,7 @@ int main(void)
 	  //switch pressed S1
 	  SwitchStateS1[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
 	  SwitchStateS2[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+	  SwitchStateS3[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
 	  if(HAL_GetTick() - ButtonTimeStampS1 >= 200) //mS
 	  {
 		  if(SwitchStateS1[1] == GPIO_PIN_SET && SwitchStateS1[0] == GPIO_PIN_RESET)
@@ -136,22 +143,42 @@ int main(void)
 
 	  //switch pressed S2
 	  if(HAL_GetTick() - ButtonTimeStampS2 >= 200) //mS
+	  {
+		  if(SwitchStateS2[1] == GPIO_PIN_SET && SwitchStateS2[0] == GPIO_PIN_RESET)
 	  	  {
-	  		  if(SwitchStateS2[1] == GPIO_PIN_SET && SwitchStateS2[0] == GPIO_PIN_RESET)
-	  		  {
-	  			  ButtonTimeStampS2 = HAL_GetTick();
-	  			  //Toggle LED 2
-	  			  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
-	  			  {
-	  				  LED2State = GPIO_PIN_RESET;
-	  			  }
-	  			  else
-	  			  {
-	  				  LED2State = GPIO_PIN_SET;
-	  			  }
-	  		  }
+			  ButtonTimeStampS2 = HAL_GetTick();
+			  //Toggle LED 2
+			  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
+				  {
+					  LED2State = GPIO_PIN_RESET;
+				  }
+				  else
+				  {
+					  LED2State = GPIO_PIN_SET;
+				  }
 	  	  }
+	  }
 	  SwitchStateS2[1] = SwitchStateS2[0];
+
+	  //switch pressed S3
+	  if(HAL_GetTick() - ButtonTimeStampS3 >= 200) //mS
+	  {
+	  	  if(SwitchStateS3[1] == GPIO_PIN_SET && SwitchStateS3[0] == GPIO_PIN_RESET)
+	  	  {
+	  	  	  ButtonTimeStampS3 = HAL_GetTick();
+	  	  	  //Toggle LED 3
+	  	  	  if(LED3Mode == 1)
+	  	  	  {
+	  	  		  LED3Mode = 0;
+	  	  	  }
+	  	  	  else
+	  	  	  {
+	  	  		  LED3Mode = 1;
+	  	  	  }
+	  	  }
+	  }
+	  SwitchStateS3[1] = SwitchStateS3[0];
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -171,6 +198,37 @@ int main(void)
 	  }
 	  //Run LED 2
 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, LED2State);
+
+	  //Run LED 3
+	  	  if(HAL_GetTick() - TimeStampS3 >= LED3_Time)
+	  	  {
+	  		  TimeStampS3 = HAL_GetTick();
+	  		  //Toggle LED 1
+	  		  if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == GPIO_PIN_SET)
+	  		  {
+	  			  if(LED3Mode == 1)
+	  			  {
+	  				  LED3_Time = 1500;
+	  			  }
+	  			  else
+	  			  {
+	  				  LED3_Time = 500;
+	  			  }
+	  			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+	  		  }
+	  		  else
+	  		  {
+	  			  if(LED3Mode == 1)
+	  			  {
+	  				  LED3_Time = 500;
+	  			  }
+	  			  else
+	  			  {
+	  				  LED3_Time = 1500;
+	  			  }
+	  			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+	  		  }
+	  	  }
   }
   /* USER CODE END 3 */
 }
@@ -273,6 +331,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -299,10 +360,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  /*Configure GPIO pins : PB3 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
