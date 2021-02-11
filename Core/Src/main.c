@@ -148,14 +148,7 @@ int main(void)
 	  	  {
 			  ButtonTimeStampS2 = HAL_GetTick();
 			  //Toggle LED 2
-			  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
-				  {
-					  LED2State = GPIO_PIN_RESET;
-				  }
-				  else
-				  {
-					  LED2State = GPIO_PIN_SET;
-				  }
+			  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
 	  	  }
 	  }
 	  SwitchStateS2[1] = SwitchStateS2[0];
@@ -196,8 +189,6 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
 		  }
 	  }
-	  //Run LED 2
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, LED2State);
 
 	  //Run LED 3
 	  if(HAL_GetTick() - TimeStampS3 >= LED3_Time)
