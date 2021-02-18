@@ -37,11 +37,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  16 .debug_macro  00014701  00000000  00000000  00027328  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   00004fa7  00000000  00000000  0003ba29  2**0
+ 17 .debug_line   00004fa5  00000000  00000000  0003ba29  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    00080e89  00000000  00000000  000409d0  2**0
+ 18 .debug_str    00080e89  00000000  00000000  000409ce  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  000c1859  2**0
+ 19 .comment      0000007b  00000000  00000000  000c1857  2**0
                   CONTENTS, READONLY
  20 .debug_frame  000016bc  00000000  00000000  000c18d4  2**2
                   CONTENTS, READONLY, DEBUGGING
@@ -419,11 +419,11 @@ int main(void)
   int LED3Mode = 0;
  800050e:	2300      	movs	r3, #0
  8000510:	613b      	str	r3, [r7, #16]
+  /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
   while (1)
   {
-	  //switch pressed S1
 	  SwitchStateS1[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
  8000512:	f44f 6180 	mov.w	r1, #1024	; 0x400
  8000516:	485f      	ldr	r0, [pc, #380]	; (8000694 <main+0x1bc>)
@@ -442,6 +442,7 @@ int main(void)
  8000530:	f000 fdb4 	bl	800109c <HAL_GPIO_ReadPin>
  8000534:	4603      	mov	r3, r0
  8000536:	713b      	strb	r3, [r7, #4]
+	  //switch pressed S1
 	  if(HAL_GetTick() - ButtonTimeStampS1 >= 200) //mS
  8000538:	f000 fb3c 	bl	8000bb4 <HAL_GetTick>
  800053c:	4602      	mov	r2, r0
