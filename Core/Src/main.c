@@ -94,9 +94,11 @@ int main(void)
   uint16_t LED1_HalfPeriod = 1000;//1Hz
   uint32_t TimeStampS1 = 0;
   uint32_t ButtonTimeStampS1 = 0;
+
   //S2 Variable
   GPIO_PinState SwitchStateS2[2];//NOW,LAST
   uint32_t ButtonTimeStampS2 = 0;
+
   //S3 Variable
   GPIO_PinState SwitchStateS3[2];//NOW,LAST
   uint32_t ButtonTimeStampS3 = 0;
