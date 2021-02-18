@@ -112,10 +112,10 @@ int main(void)
 
   while (1)
   {
-	  //switch pressed S1
 	  SwitchStateS1[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
 	  SwitchStateS2[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
 	  SwitchStateS3[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+	  //switch pressed S1
 	  if(HAL_GetTick() - ButtonTimeStampS1 >= 200) //mS
 	  {
 		  if(SwitchStateS1[1] == GPIO_PIN_SET && SwitchStateS1[0] == GPIO_PIN_RESET)

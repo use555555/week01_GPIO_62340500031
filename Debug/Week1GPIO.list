@@ -398,11 +398,13 @@ int main(void)
   uint32_t ButtonTimeStampS1 = 0;
  80004f8:	2300      	movs	r3, #0
  80004fa:	627b      	str	r3, [r7, #36]	; 0x24
+
   //S2 Variable
   GPIO_PinState SwitchStateS2[2];//NOW,LAST
   uint32_t ButtonTimeStampS2 = 0;
  80004fc:	2300      	movs	r3, #0
  80004fe:	623b      	str	r3, [r7, #32]
+
   //S3 Variable
   GPIO_PinState SwitchStateS3[2];//NOW,LAST
   uint32_t ButtonTimeStampS3 = 0;
